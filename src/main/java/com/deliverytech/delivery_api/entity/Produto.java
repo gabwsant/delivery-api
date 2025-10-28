@@ -21,7 +21,7 @@ public class Produto {
 
     private String descricao;
 
-    private BigDecimal preco;
+    private double preco;
 
     @ManyToOne
     @JoinColumn(name = "restaurante_id")

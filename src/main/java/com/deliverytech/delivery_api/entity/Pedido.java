@@ -38,7 +38,7 @@ public class Pedido {
     @Column(name = "data_pedido")
     private LocalDateTime dataPedido;
 
-    private BigDecimal total;
+    private double total;
 
     private String status; // ex: "PENDENTE", "EM_PREPARO", "ENTREGUE"
 
@@ -46,11 +46,4 @@ public class Pedido {
         this.status = novoStatus;
     }
 
-    public void calcularTotal() {
-        if (produtos != null) {
-            this.total = produtos.stream()
-                    .map(Produto::getPreco)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-        }
-    }
 }
