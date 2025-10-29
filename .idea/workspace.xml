@@ -4,14 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2f7f4589-ebf2-465a-a403-1412c4c9286f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/controller/ClienteController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/ClienteRequestDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/ClienteResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/service/ClienteService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/service/ClienteService.java" afterDir="false" />
-    </list>
+    <list default="true" id="2f7f4589-ebf2-465a-a403-1412c4c9286f" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -115,7 +108,7 @@
       <option name="presentableId" value="Default" />
       <updated>1761602690141</updated>
       <workItem from="1761602694260" duration="20000" />
-      <workItem from="1761602731482" duration="7719000" />
+      <workItem from="1761602731482" duration="7783000" />
     </task>
     <servers />
   </component>
