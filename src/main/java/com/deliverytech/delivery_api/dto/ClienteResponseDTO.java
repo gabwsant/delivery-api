@@ -1,7 +1,10 @@
 package com.deliverytech.delivery_api.dto;
 
+import lombok.Data;
+
 import java.time.LocalDateTime;
 
+@Data
 public class ClienteResponseDTO {
 
     public Long id;

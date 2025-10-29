@@ -8,6 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,8 @@ public class ClienteController {
         cliente.setEmail(dto.email);
         cliente.setTelefone(dto.telefone);
         cliente.setEndereco(dto.endereco);
+        cliente.setDataCadastro(LocalDateTime.now());
+        cliente.setAtivo(true);
 
         Cliente salvo = clienteService.cadastrar(cliente);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapToResponse(salvo));

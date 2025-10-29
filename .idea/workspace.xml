@@ -4,7 +4,18 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2f7f4589-ebf2-465a-a403-1412c4c9286f" name="Changes" comment="" />
+    <list default="true" id="2f7f4589-ebf2-465a-a403-1412c4c9286f" name="Changes" comment="">
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/controller/RestauranteController.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/ProdutoRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/ProdutoResponseDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/RestauranteRequestDTO.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/RestauranteResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/controller/ClienteController.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/controller/ClienteController.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/ClienteRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/ClienteRequestDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/ClienteResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/ClienteResponseDTO.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/test/java/com/deliverytech/delivery_api/DeliveryApiApplicationTests.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/test/java/com/deliverytech/delivery_api/DeliveryApiApplicationTests.java" afterDir="false" />
+    </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -41,28 +52,28 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent"><![CDATA[{
-  "keyToString": {
-    "JUnit.DeliveryApiApplicationTests.executor": "Run",
-    "ModuleVcsDetector.initialDetectionPerformed": "true",
-    "RequestMappingsPanelOrder0": "0",
-    "RequestMappingsPanelOrder1": "1",
-    "RequestMappingsPanelWidth0": "75",
-    "RequestMappingsPanelWidth1": "75",
-    "RunOnceActivity.ShowReadmeOnStart": "true",
-    "RunOnceActivity.git.unshallow": "true",
-    "Spring Boot.DeliveryApiApplication.executor": "Run",
-    "git-widget-placeholder": "master",
-    "last_opened_file_path": "C:/Users/gabri/OneDrive/Desktop/Extensão API JAVA/delivery-api",
-    "node.js.detected.package.eslint": "true",
-    "node.js.detected.package.tslint": "true",
-    "node.js.selected.package.eslint": "(autodetect)",
-    "node.js.selected.package.tslint": "(autodetect)",
-    "nodejs_package_manager_path": "npm",
-    "vue.rearranger.settings.migration": "true"
+  <component name="PropertiesComponent">{
+  &quot;keyToString&quot;: {
+    &quot;JUnit.DeliveryApiApplicationTests.executor&quot;: &quot;Run&quot;,
+    &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
+    &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
+    &quot;RequestMappingsPanelOrder1&quot;: &quot;1&quot;,
+    &quot;RequestMappingsPanelWidth0&quot;: &quot;75&quot;,
+    &quot;RequestMappingsPanelWidth1&quot;: &quot;75&quot;,
+    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
+    &quot;RunOnceActivity.git.unshallow&quot;: &quot;true&quot;,
+    &quot;Spring Boot.DeliveryApiApplication.executor&quot;: &quot;Run&quot;,
+    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
+    &quot;last_opened_file_path&quot;: &quot;C:/Users/gabri/OneDrive/Desktop/Extensão API JAVA/delivery-api&quot;,
+    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
+    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
+    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
+    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
+    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
+    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
   }
-}]]></component>
-  <component name="RunManager" selected="JUnit.DeliveryApiApplicationTests">
+}</component>
+  <component name="RunManager" selected="Spring Boot.DeliveryApiApplication">
     <configuration name="DeliveryApiApplicationTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="delivery-api" />
       <extension name="coverage">
@@ -109,6 +120,7 @@
       <updated>1761602690141</updated>
       <workItem from="1761602694260" duration="20000" />
       <workItem from="1761602731482" duration="7783000" />
+      <workItem from="1761774873015" duration="4183000" />
     </task>
     <servers />
   </component>
