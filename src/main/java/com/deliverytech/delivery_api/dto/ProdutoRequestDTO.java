@@ -4,7 +4,8 @@ import lombok.Data;
 
 @Data
 public class ProdutoRequestDTO {
-    public String nome;
-    public String descricao;
-    public double preco;
+    private String nome;
+    private String descricao;
+    private double preco;
+    private Boolean ativo; // Opcional para update
 }

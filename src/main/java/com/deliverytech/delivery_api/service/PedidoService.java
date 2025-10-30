@@ -11,6 +11,7 @@ import com.deliverytech.delivery_api.repository.PedidoRepository;
 import com.deliverytech.delivery_api.repository.ProdutoRepository;
 import com.deliverytech.delivery_api.repository.RestauranteRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -57,20 +58,23 @@ public class PedidoService {
         return pedidoRepository.save(pedido);
     }
 
+    @Transactional
     public Pedido atualizarStatus(Long pedidoId, String novoStatus) {
-        Pedido pedido = pedidoRepository.findById(pedidoId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Pedido não encontrado"));
+        Pedido pedido = pedidoRepository.findByIdWithProdutos(pedidoId);
+        if (pedido == null) throw new EntidadeNaoEncontradaException("Pedido não encontrado");
 
-        // lógica simples de mudança de status, pode adicionar regras mais complexas
         pedido.setStatus(novoStatus);
         return pedidoRepository.save(pedido);
     }
 
+    @Transactional
     public List<Pedido> buscarPorCliente(Long clienteId) {
-        Cliente cliente = clienteRepository.findById(clienteId)
+        // Valida se cliente existe
+        clienteRepository.findById(clienteId)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Cliente não encontrado"));
 
-        return pedidoRepository.findByCliente(cliente);
+        // Busca pedidos com produtos carregados
+        return pedidoRepository.findByClienteWithProdutos(clienteId);
     }
 }
 

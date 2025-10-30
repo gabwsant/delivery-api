@@ -8,6 +8,8 @@ import com.deliverytech.delivery_api.repository.ProdutoRepository;
 import com.deliverytech.delivery_api.repository.RestauranteRepository;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 public class ProdutoService {
     private final ProdutoRepository produtoRepository;
@@ -59,5 +61,11 @@ public class ProdutoService {
         if(preco == null || preco <= 0) {
             throw new RegraNegocioException("Preço inválido: " + preco);
         }
+    }
+
+    public List<Produto> buscarPorRestaurante(Long restauranteId) {
+        Restaurante restaurante = restauranteRepository.findById(restauranteId)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Restaurante não encontrado"));
+        return produtoRepository.findByRestaurante(restaurante);
     }
 }
