@@ -4,18 +4,7 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="2f7f4589-ebf2-465a-a403-1412c4c9286f" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/controller/PedidoController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/controller/ProdutoController.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/PedidoRequestDTO.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/PedidoResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/ProdutoRequestDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/ProdutoRequestDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/ProdutoResponseDTO.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/dto/ProdutoResponseDTO.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/repository/PedidoRepository.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/repository/PedidoRepository.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/service/PedidoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/service/PedidoService.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/service/ProdutoService.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/com/deliverytech/delivery_api/service/ProdutoService.java" afterDir="false" />
-    </list>
+    <list default="true" id="2f7f4589-ebf2-465a-a403-1412c4c9286f" name="Changes" comment="" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
@@ -120,7 +109,7 @@
       <updated>1761602690141</updated>
       <workItem from="1761602694260" duration="20000" />
       <workItem from="1761602731482" duration="7783000" />
-      <workItem from="1761774873015" duration="6185000" />
+      <workItem from="1761774873015" duration="6667000" />
     </task>
     <servers />
   </component>
