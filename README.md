@@ -54,7 +54,7 @@ Sistema de delivery desenvolvido com Spring Boot e Java 21.
 ## 🧪 Instruções de Teste
 
 ### 1. Criar um pedido
-
+```bash
 curl -X POST http://localhost:8080/pedidos \
 -H "Content-Type: application/json" \
 -d '{
@@ -62,7 +62,7 @@ curl -X POST http://localhost:8080/pedidos \
   "restauranteId": 1,
   "produtosIds": [1, 2, 3]
 }'
-
+```
 ### 2. Listar pedidos de um cliente
 
 ```bash
@@ -71,12 +71,14 @@ curl http://localhost:8080/pedidos/cliente/1
 
 ### 3. Atualizar status de um pedido
 
+```bash
 curl -X PUT "http://localhost:8080/pedidos/1/status?status=ENTREGUE"
-
+```
 ### 4. Listar produtos de um restaurante
 
+```bash
 curl http://localhost:8080/produtos/restaurante/1
-
+```
 ## 🔧 Configuração
 
 * Porta: 8080
