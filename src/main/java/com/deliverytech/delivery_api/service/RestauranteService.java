@@ -6,6 +6,7 @@ import com.deliverytech.delivery_api.exception.RegraNegocioException;
 import com.deliverytech.delivery_api.repository.RestauranteRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -21,6 +22,10 @@ public class RestauranteService {
     public Restaurante cadastrar(Restaurante restaurante) {
         validarNomeUnico(restaurante.getNome());
         restaurante.setAtivo(true);
+        restaurante.setDataCadastro(LocalDateTime.now());
+
+        // CORREÇÃO: Retorne o *resultado* do save(),
+        // pois é ele quem contém o ID gerado pelo banco.
         return restauranteRepository.save(restaurante);
     }
 
@@ -31,7 +36,7 @@ public class RestauranteService {
     }
 
     public List<Restaurante> listarTodos() {
-        return restauranteRepository.findAll();
+        return restauranteRepository.findAllWithProdutos();
     }
 
     public List<Restaurante> buscarPorCategoria(String categoria) {

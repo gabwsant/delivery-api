@@ -1,15 +1,18 @@
 package com.deliverytech.delivery_api.controller;
 
+import com.deliverytech.delivery_api.dto.ItemPedidoRequestDTO;
+import com.deliverytech.delivery_api.dto.ItemPedidoResponseDTO;
 import com.deliverytech.delivery_api.dto.PedidoRequestDTO;
 import com.deliverytech.delivery_api.dto.PedidoResponseDTO;
+import com.deliverytech.delivery_api.entity.ItemPedido;
 import com.deliverytech.delivery_api.entity.Pedido;
-import com.deliverytech.delivery_api.entity.Produto;
 import com.deliverytech.delivery_api.service.PedidoService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
@@ -25,9 +28,20 @@ public class PedidoController {
     // =================== CREATE ===================
     @PostMapping
     public ResponseEntity<PedidoResponseDTO> criarPedido(@RequestBody PedidoRequestDTO dto) {
-        Pedido pedido = pedidoService.criarPedido(dto.getClienteId(),
+
+        // Converte a Lista de DTOs de Itens para o Map que o Service espera
+        Map<Long, Integer> itensMap = dto.getItens().stream()
+                .collect(Collectors.toMap(
+                        ItemPedidoRequestDTO::getProdutoId,
+                        ItemPedidoRequestDTO::getQuantidade
+                ));
+
+        Pedido pedido = pedidoService.criarPedido(
+                dto.getClienteId(),
                 dto.getRestauranteId(),
-                dto.getProdutosIds());
+                itensMap // Envia o Map corrigido
+        );
+
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(pedido));
     }
 
@@ -57,13 +71,27 @@ public class PedidoController {
         dto.setClienteNome(pedido.getCliente().getNome());
         dto.setRestauranteId(pedido.getRestaurante().getId());
         dto.setRestauranteNome(pedido.getRestaurante().getNome());
-        dto.setProdutosNomes(pedido.getProdutos()
-                .stream()
-                .map(Produto::getNome)
-                .collect(Collectors.toList()));
         dto.setTotal(pedido.getTotal());
         dto.setStatus(pedido.getStatus());
         dto.setDataPedido(pedido.getDataPedido());
+
+        // Mapeia a lista de Entidades ItemPedido para DTOs ItemPedidoResponse
+        List<ItemPedidoResponseDTO> itensDto = pedido.getItens().stream()
+                .map(this::mapItemToResponse)
+                .collect(Collectors.toList());
+
+        dto.setItens(itensDto);
+
+        return dto;
+    }
+
+    // Conversor auxiliar para o item
+    private ItemPedidoResponseDTO mapItemToResponse(ItemPedido item) {
+        ItemPedidoResponseDTO dto = new ItemPedidoResponseDTO();
+        dto.setNomeProduto(item.getProduto().getNome());
+        dto.setQuantidade(item.getQuantidade());
+        dto.setPrecoUnitario(item.getPrecoUnitario());
+        dto.setSubtotal(item.getSubtotal());
         return dto;
     }
 }

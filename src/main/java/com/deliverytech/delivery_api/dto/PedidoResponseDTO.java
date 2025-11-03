@@ -1,6 +1,7 @@
 package com.deliverytech.delivery_api.dto;
 
 import lombok.Data;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -11,8 +12,8 @@ public class PedidoResponseDTO {
     private String clienteNome;
     private Long restauranteId;
     private String restauranteNome;
-    private List<String> produtosNomes;
-    private double total;
+    private BigDecimal total;
     private String status;
     private LocalDateTime dataPedido;
+    private List<ItemPedidoResponseDTO> itens;
 }

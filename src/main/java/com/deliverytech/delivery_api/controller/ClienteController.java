@@ -8,7 +8,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,12 +25,14 @@ public class ClienteController {
     @PostMapping
     public ResponseEntity<ClienteResponseDTO> cadastrar(@RequestBody ClienteRequestDTO dto) {
         Cliente cliente = new Cliente();
-        cliente.setNome(dto.nome);
-        cliente.setEmail(dto.email);
-        cliente.setTelefone(dto.telefone);
-        cliente.setEndereco(dto.endereco);
-        cliente.setDataCadastro(LocalDateTime.now());
-        cliente.setAtivo(true);
+        // Corrigido para usar getters
+        cliente.setNome(dto.getNome());
+        cliente.setEmail(dto.getEmail());
+        cliente.setTelefone(dto.getTelefone());
+        cliente.setEndereco(dto.getEndereco());
+
+        // Removido: Lógica de negócio (setAtivo, setDataCadastro)
+        // O Service é responsável por isso.
 
         Cliente salvo = clienteService.cadastrar(cliente);
         return ResponseEntity.status(HttpStatus.CREATED).body(mapToResponse(salvo));
@@ -59,10 +60,10 @@ public class ClienteController {
     public ResponseEntity<ClienteResponseDTO> atualizar(@PathVariable Long id,
                                                         @RequestBody ClienteRequestDTO dto) {
         Cliente novosDados = new Cliente();
-        novosDados.setNome(dto.nome);
-        novosDados.setEmail(dto.email);
-        novosDados.setTelefone(dto.telefone);
-        novosDados.setEndereco(dto.endereco);
+        novosDados.setNome(dto.getNome());
+        novosDados.setEmail(dto.getEmail());
+        novosDados.setTelefone(dto.getTelefone());
+        novosDados.setEndereco(dto.getEndereco());
 
         Cliente atualizado = clienteService.atualizar(id, novosDados);
         return ResponseEntity.ok(mapToResponse(atualizado));
@@ -80,13 +81,14 @@ public class ClienteController {
     // --------------------
     private ClienteResponseDTO mapToResponse(Cliente cliente) {
         ClienteResponseDTO dto = new ClienteResponseDTO();
-        dto.id = cliente.getId();
-        dto.nome = cliente.getNome();
-        dto.email = cliente.getEmail();
-        dto.telefone = cliente.getTelefone();
-        dto.endereco = cliente.getEndereco();
-        dto.ativo = cliente.getAtivo();
-        dto.dataCadastro = cliente.getDataCadastro();
+        // Corrigido para usar setters
+        dto.setId(cliente.getId());
+        dto.setNome(cliente.getNome());
+        dto.setEmail(cliente.getEmail());
+        dto.setTelefone(cliente.getTelefone());
+        dto.setEndereco(cliente.getEndereco());
+        dto.setAtivo(cliente.isAtivo()); // Corrigido para 'isAtivo'
+        dto.setDataCadastro(cliente.getDataCadastro());
         return dto;
     }
 }

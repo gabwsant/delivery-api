@@ -3,24 +3,33 @@ package com.deliverytech.delivery_api.repository;
 import com.deliverytech.delivery_api.entity.Produto;
 import com.deliverytech.delivery_api.entity.Restaurante;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
 
+import java.math.BigDecimal;
 import java.util.List;
 
+@Repository
 public interface ProdutoRepository extends JpaRepository<Produto, Long> {
 
-    // Buscar produtos de um restaurante específico
     List<Produto> findByRestaurante(Restaurante restaurante);
 
-    // Buscar por categoria (se o campo existir)
-    @Query("SELECT p FROM Produto p WHERE LOWER(p.descricao) LIKE LOWER(CONCAT('%', :categoria, '%'))")
-    List<Produto> findByCategoriaAproximada(@Param("categoria") String categoria);
+    @Query("SELECT p FROM Produto p WHERE LOWER(p.descricao) LIKE LOWER(CONCAT('%', :termo, '%'))")
+    List<Produto> findByDescricaoContendo(@Param("termo") String termo);
 
-    // Buscar produtos disponíveis (ativos)
     List<Produto> findByAtivoTrue();
 
-    // Buscar por restaurante e disponibilidade
-    @Query("SELECT p FROM Produto p WHERE p.restaurante.id = :restauranteId AND p.ativo = true")
-    List<Produto> findDisponiveisByRestaurante(@Param("restauranteId") Long restauranteId);
+    List<Produto> findByRestauranteId(Long restauranteId);
+
+    List<Produto> findByRestauranteCategoria(String categoria);
+
+    List<Produto> findByPrecoLessThanEqual(BigDecimal preco);
+
+    List<Produto> findByRestauranteAndAtivoTrue(Restaurante restaurante);
+
+    @Modifying
+    @Query("UPDATE Produto p SET p.ativo = :ativo WHERE p.id = :id")
+    void setAtivo(@Param("id") Long id, @Param("ativo") boolean ativo);
 }

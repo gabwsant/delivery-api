@@ -6,7 +6,6 @@
   <component name="ChangeListManager">
     <list default="true" id="2f7f4589-ebf2-465a-a403-1412c4c9286f" name="Changes" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.~lock.EntragasSegundoRoteiro.odt#" beforeDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -16,8 +15,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Interface" />
         <option value="Exception" />
+        <option value="Interface" />
         <option value="Class" />
       </list>
     </option>
@@ -46,6 +45,7 @@
   </component>
   <component name="PropertiesComponent">{
   &quot;keyToString&quot;: {
+    &quot;JUnit.All in delivery-api.executor&quot;: &quot;Run&quot;,
     &quot;JUnit.DeliveryApiApplicationTests.executor&quot;: &quot;Run&quot;,
     &quot;ModuleVcsDetector.initialDetectionPerformed&quot;: &quot;true&quot;,
     &quot;RequestMappingsPanelOrder0&quot;: &quot;0&quot;,
@@ -63,9 +63,22 @@
     &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
     &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
     &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  },
+  &quot;keyToStringList&quot;: {
+    &quot;DatabaseDriversLRU&quot;: [
+      &quot;h2&quot;
+    ]
   }
 }</component>
-  <component name="RunManager" selected="Spring Boot.DeliveryApiApplication">
+  <component name="RunManager" selected="JUnit.DeliveryApiApplicationTests">
+    <configuration name="All in delivery-api" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
+      <module name="delivery-api" />
+      <option name="PACKAGE_NAME" value="" />
+      <option name="TEST_OBJECT" value="package" />
+      <method v="2">
+        <option name="Make" enabled="true" />
+      </method>
+    </configuration>
     <configuration name="DeliveryApiApplicationTests" type="JUnit" factoryName="JUnit" temporary="true" nameIsGenerated="true">
       <module name="delivery-api" />
       <extension name="coverage">
@@ -92,6 +105,7 @@
     <recent_temporary>
       <list>
         <item itemvalue="JUnit.DeliveryApiApplicationTests" />
+        <item itemvalue="JUnit.All in delivery-api" />
       </list>
     </recent_temporary>
   </component>
@@ -113,6 +127,8 @@
       <workItem from="1761602694260" duration="20000" />
       <workItem from="1761602731482" duration="7783000" />
       <workItem from="1761774873015" duration="7572000" />
+      <workItem from="1761951764871" duration="1016000" />
+      <workItem from="1762208641300" duration="4781000" />
     </task>
     <servers />
   </component>

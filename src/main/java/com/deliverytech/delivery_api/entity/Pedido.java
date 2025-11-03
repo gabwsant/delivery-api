@@ -1,18 +1,18 @@
 package com.deliverytech.delivery_api.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 @Table(name = "pedidos")
 public class Pedido {
     @Id
@@ -27,23 +27,41 @@ public class Pedido {
     @JoinColumn(name = "restaurante_id")
     private Restaurante restaurante;
 
-    @ManyToMany
-    @JoinTable(
-            name = "pedido_produto",
-            joinColumns = @JoinColumn(name = "pedido_id"),
-            inverseJoinColumns = @JoinColumn(name = "produto_id")
-    )
-    private List<Produto> produtos;
+    @OneToMany(mappedBy = "pedido", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
+    @ToString.Exclude
+    private List<ItemPedido> itens;
 
     @Column(name = "data_pedido")
     private LocalDateTime dataPedido;
 
-    private double total;
+    private BigDecimal total;
 
-    private String status; // ex: "PENDENTE", "EM_PREPARO", "ENTREGUE"
+    private String status;
 
     public void atualizarStatus(String novoStatus) {
         this.status = novoStatus;
     }
 
+    // Método helper para calcular o total
+    public void calcularTotal() {
+        if (this.itens == null) {
+            this.total = BigDecimal.ZERO;
+            return;
+        }
+        this.total = this.itens.stream()
+                .map(ItemPedido::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+    }
+
+    @Override
+    public String toString() {
+        return "Pedido{" +
+                "id=" + id +
+                ", cliente=" + (cliente != null ? cliente.getNome() : "null") +
+                ", restaurante=" + (restaurante != null ? restaurante.getNome() : "null") +
+                ", dataPedido=" + dataPedido +
+                ", total=" + total +
+                ", status='" + status + '\'' +
+                '}';
+    }
 }

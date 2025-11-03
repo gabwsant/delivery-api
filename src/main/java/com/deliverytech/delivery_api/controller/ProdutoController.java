@@ -29,7 +29,13 @@ public class ProdutoController {
         produto.setNome(dto.getNome());
         produto.setDescricao(dto.getDescricao());
         produto.setPreco(dto.getPreco());
-        produto.setAtivo(true);
+
+        // Se o DTO de request tem o campo 'ativo', podemos passá-lo
+        // O Service (cadastrar) deve ser inteligente para usar isso ou setar um default
+        if(dto.getAtivo() != null) {
+            produto.setAtivo(dto.getAtivo());
+        }
+        // Se for nulo, o Service (ou a entidade) deve assumir um padrão (ex: true)
 
         Produto salvo = produtoService.cadastrar(restauranteId, produto);
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(salvo));
@@ -38,7 +44,7 @@ public class ProdutoController {
     // =================== READ ===================
     @GetMapping("/{id}")
     public ResponseEntity<ProdutoResponseDTO> buscarPorId(@PathVariable Long id) {
-        Produto produto = produtoService.atualizar(id, null); // você pode criar método buscarPorId no service
+        Produto produto = produtoService.buscarPorId(id);
         return ResponseEntity.ok(toResponse(produto));
     }
 
@@ -59,7 +65,7 @@ public class ProdutoController {
         produto.setNome(dto.getNome());
         produto.setDescricao(dto.getDescricao());
         produto.setPreco(dto.getPreco());
-        produto.setAtivo(dto.getAtivo());
+        produto.setAtivo(dto.getAtivo()); // No update, o service deve aceitar o que vem
 
         Produto atualizado = produtoService.atualizar(id, produto);
         return ResponseEntity.ok(toResponse(atualizado));
@@ -68,7 +74,7 @@ public class ProdutoController {
     // =================== DELETE (ou inativar) ===================
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
-        produtoService.alterarDisponibilidade(id, false); // inativa o produto
+        produtoService.alterarDisponibilidade(id, false);
         return ResponseEntity.noContent().build();
     }
 
@@ -79,7 +85,7 @@ public class ProdutoController {
         dto.setNome(produto.getNome());
         dto.setDescricao(produto.getDescricao());
         dto.setPreco(produto.getPreco());
-        dto.setAtivo(produto.getAtivo());
+        dto.setAtivo(produto.isAtivo()); // Corrigido para 'isAtivo'
         dto.setRestauranteId(produto.getRestaurante().getId());
         dto.setRestauranteNome(produto.getRestaurante().getNome());
         return dto;

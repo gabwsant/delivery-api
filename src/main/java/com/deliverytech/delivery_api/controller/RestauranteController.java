@@ -1,14 +1,16 @@
 package com.deliverytech.delivery_api.controller;
 
+import com.deliverytech.delivery_api.dto.ProdutoResponseDTO;
 import com.deliverytech.delivery_api.dto.RestauranteRequestDTO;
 import com.deliverytech.delivery_api.dto.RestauranteResponseDTO;
+import com.deliverytech.delivery_api.entity.Produto;
 import com.deliverytech.delivery_api.entity.Restaurante;
 import com.deliverytech.delivery_api.service.RestauranteService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -31,9 +33,7 @@ public class RestauranteController {
         restaurante.setEndereco(dto.getEndereco());
         restaurante.setTelefone(dto.getTelefone());
         restaurante.setCategoria(dto.getCategoria());
-        restaurante.setAtivo(true);
-        restaurante.setDataCadastro(LocalDateTime.now());
-        restaurante.setProdutos(null);
+
 
         Restaurante salvo = restauranteService.cadastrar(restaurante);
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(salvo));
@@ -97,7 +97,30 @@ public class RestauranteController {
         dto.setCategoria(restaurante.getCategoria());
         dto.setAvaliacao(restaurante.getAvaliacao());
         dto.setDataCadastro(restaurante.getDataCadastro());
-        dto.setAtivo(restaurante.getAtivo());
+        dto.setAtivo(restaurante.isAtivo()); // Corrigido para 'isAtivo'
+
+        // CORRIGIDO: Mapeamento da lista de produtos (que estava faltando)
+        List<ProdutoResponseDTO> produtosDto = restaurante.getProdutos() != null ?
+                restaurante.getProdutos().stream()
+                        .map(this::mapProdutoToResponse)
+                        .collect(Collectors.toList()) :
+                Collections.emptyList(); // Evita NullPointerException
+
+        dto.setProdutos(produtosDto);
+
+        return dto;
+    }
+
+    // Conversor auxiliar de Produto
+    private ProdutoResponseDTO mapProdutoToResponse(Produto produto) {
+        ProdutoResponseDTO dto = new ProdutoResponseDTO();
+        dto.setId(produto.getId());
+        dto.setNome(produto.getNome());
+        dto.setDescricao(produto.getDescricao());
+        dto.setPreco(produto.getPreco());
+        dto.setAtivo(produto.isAtivo());
+        dto.setRestauranteId(produto.getRestaurante().getId());
+        dto.setRestauranteNome(produto.getRestaurante().getNome());
         return dto;
     }
 }

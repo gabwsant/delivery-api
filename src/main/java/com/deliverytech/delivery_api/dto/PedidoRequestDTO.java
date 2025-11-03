@@ -7,5 +7,5 @@ import java.util.List;
 public class PedidoRequestDTO {
     private Long clienteId;
     private Long restauranteId;
-    private List<Long> produtosIds;
+    private List<ItemPedidoRequestDTO> itens;
 }

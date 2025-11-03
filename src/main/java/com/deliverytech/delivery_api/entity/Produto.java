@@ -1,16 +1,16 @@
 package com.deliverytech.delivery_api.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 
 import java.math.BigDecimal;
 
 @Entity
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(of = "id")
 @Table(name = "produtos")
 public class Produto {
     @Id
@@ -18,20 +18,28 @@ public class Produto {
     private Long id;
 
     private String nome;
-
     private String descricao;
-
-    private double preco;
+    private BigDecimal preco;
 
     @ManyToOne
     @JoinColumn(name = "restaurante_id")
+    @ToString.Exclude
     private Restaurante restaurante;
 
-    @Column(nullable = true)
-    private Boolean ativo;
+    @Column(nullable = false)
+    private boolean ativo = true;
 
     public void inativar() {
         this.ativo = false;
     }
-}
 
+    @Override
+    public String toString() {
+        return "Produto{" +
+                "id=" + id +
+                ", nome='" + nome + '\'' +
+                ", preco=" + preco +
+                ", ativo=" + ativo +
+                '}';
+    }
+}
