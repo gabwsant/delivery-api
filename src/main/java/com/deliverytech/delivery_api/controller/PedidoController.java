@@ -11,12 +11,15 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal; // Importação necessária
+import java.time.LocalDateTime; // Importação necessária
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 @RestController
-@RequestMapping("/pedidos")
+// Ajustado para o path '/api/pedidos' conforme o requisito
+@RequestMapping("/api/pedidos")
 public class PedidoController {
 
     private final PedidoService pedidoService;
@@ -26,10 +29,13 @@ public class PedidoController {
     }
 
     // =================== CREATE ===================
+    /**
+     * POST /api/pedidos - Criar pedido
+     */
     @PostMapping
     public ResponseEntity<PedidoResponseDTO> criarPedido(@RequestBody PedidoRequestDTO dto) {
 
-        // Converte a Lista de DTOs de Itens para o Map que o Service espera
+        // Conversão de DTO de Itens para o Map que o Service espera
         Map<Long, Integer> itensMap = dto.getItens().stream()
                 .collect(Collectors.toMap(
                         ItemPedidoRequestDTO::getProdutoId,
@@ -39,15 +45,68 @@ public class PedidoController {
         Pedido pedido = pedidoService.criarPedido(
                 dto.getClienteId(),
                 dto.getRestauranteId(),
-                itensMap // Envia o Map corrigido
+                itensMap
         );
 
         return ResponseEntity.status(HttpStatus.CREATED).body(toResponse(pedido));
     }
 
+    /**
+     * POST /api/pedidos/calcular - Calcular total sem salvar
+     * NOVO ENDPOINT
+     */
+    @PostMapping("/calcular")
+    public ResponseEntity<BigDecimal> calcularTotal(@RequestBody PedidoRequestDTO dto) {
+
+        Map<Long, Integer> itensMap = dto.getItens().stream()
+                .collect(Collectors.toMap(
+                        ItemPedidoRequestDTO::getProdutoId,
+                        ItemPedidoRequestDTO::getQuantidade
+                ));
+
+        BigDecimal total = pedidoService.calcularTotal(
+                dto.getRestauranteId(), // Pode ser necessário para taxa de entrega
+                itensMap
+        );
+
+        return ResponseEntity.ok(total);
+    }
+
+
     // =================== READ ===================
-    @GetMapping("/cliente/{clienteId}")
+    /**
+     * GET /api/pedidos/{id} - Buscar pedido completo
+     */
+    @GetMapping("/{id}")
+    public ResponseEntity<PedidoResponseDTO> buscarPorId(@PathVariable Long id) {
+        Pedido pedido = pedidoService.buscarPorIdCompleto(id);
+        return ResponseEntity.ok(toResponse(pedido));
+    }
+
+    /**
+     * GET /api/pedidos - Listar com filtros (status, data)
+     * Adicionado para filtros dinâmicos
+     */
+    @GetMapping
+    public ResponseEntity<List<PedidoResponseDTO>> listarComFiltros(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataInicio,
+            @RequestParam(required = false) @org.springframework.format.annotation.DateTimeFormat(iso = org.springframework.format.annotation.DateTimeFormat.ISO.DATE_TIME) LocalDateTime dataFim) {
+
+        List<Pedido> pedidos = pedidoService.listarComFiltros(status, dataInicio, dataFim);
+        List<PedidoResponseDTO> dtos = pedidos.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
+    /**
+     * GET /api/clientes/{clienteId}/pedidos - Histórico do cliente
+     * NOTA: Mapeamento em /api/pedidos/cliente/{clienteId}
+     */
+    @GetMapping("/clientes/{clienteId}")
     public ResponseEntity<List<PedidoResponseDTO>> listarPorCliente(@PathVariable Long clienteId) {
+        // Método já existente
         List<Pedido> pedidos = pedidoService.buscarPorCliente(clienteId);
         List<PedidoResponseDTO> dtos = pedidos.stream()
                 .map(this::toResponse)
@@ -55,16 +114,46 @@ public class PedidoController {
         return ResponseEntity.ok(dtos);
     }
 
+    /**
+     * GET /api/restaurantes/{restauranteId}/pedidos - Pedidos do restaurante
+     * NOVO ENDPOINT
+     */
+    @GetMapping("/restaurantes/{restauranteId}")
+    public ResponseEntity<List<PedidoResponseDTO>> listarPorRestaurante(@PathVariable Long restauranteId) {
+        List<Pedido> pedidos = pedidoService.buscarPorRestaurante(restauranteId);
+        List<PedidoResponseDTO> dtos = pedidos.stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+        return ResponseEntity.ok(dtos);
+    }
+
     // =================== UPDATE ===================
-    @PutMapping("/{pedidoId}/status")
-    public ResponseEntity<PedidoResponseDTO> atualizarStatus(@PathVariable Long pedidoId,
+    /**
+     * PATCH /api/pedidos/{id}/status - Atualizar status
+     * Uso do PATCH e Path correto
+     */
+    @PatchMapping("/{id}/status")
+    public ResponseEntity<PedidoResponseDTO> atualizarStatus(@PathVariable Long id,
                                                              @RequestParam String status) {
-        Pedido atualizado = pedidoService.atualizarStatus(pedidoId, status);
+        Pedido atualizado = pedidoService.atualizarStatus(id, status);
         return ResponseEntity.ok(toResponse(atualizado));
     }
 
+    // =================== DELETE ===================
+    /**
+     * DELETE /api/pedidos/{id} - Cancelar pedido
+     * Adicionado o método de serviço `cancelarPedido`
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> cancelarPedido(@PathVariable Long id) {
+        pedidoService.cancelarPedido(id);
+        return ResponseEntity.noContent().build();
+    }
+
     // =================== CONVERSOR ===================
+    // Métodos toResponse e mapItemToResponse permanecem os mesmos
     private PedidoResponseDTO toResponse(Pedido pedido) {
+        // ... (lógica de conversão DTO) ...
         PedidoResponseDTO dto = new PedidoResponseDTO();
         dto.setId(pedido.getId());
         dto.setClienteId(pedido.getCliente().getId());
@@ -75,7 +164,6 @@ public class PedidoController {
         dto.setStatus(pedido.getStatus());
         dto.setDataPedido(pedido.getDataPedido());
 
-        // Mapeia a lista de Entidades ItemPedido para DTOs ItemPedidoResponse
         List<ItemPedidoResponseDTO> itensDto = pedido.getItens().stream()
                 .map(this::mapItemToResponse)
                 .collect(Collectors.toList());
@@ -85,8 +173,8 @@ public class PedidoController {
         return dto;
     }
 
-    // Conversor auxiliar para o item
     private ItemPedidoResponseDTO mapItemToResponse(ItemPedido item) {
+        // ... (lógica de conversão DTO) ...
         ItemPedidoResponseDTO dto = new ItemPedidoResponseDTO();
         dto.setNomeProduto(item.getProduto().getNome());
         dto.setQuantidade(item.getQuantidade());

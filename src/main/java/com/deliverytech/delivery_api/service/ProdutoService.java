@@ -7,7 +7,7 @@ import com.deliverytech.delivery_api.exception.RegraNegocioException;
 import com.deliverytech.delivery_api.repository.ProdutoRepository;
 import com.deliverytech.delivery_api.repository.RestauranteRepository;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // <-- IMPORTAR
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -23,12 +23,12 @@ public class ProdutoService {
         this.restauranteRepository = restauranteRepository;
     }
 
-    // ... (métodos cadastrar, atualizar, validarPreco, buscarPorRestaurante, buscarPorId estão CORRETOS) ...
+    // =================== CREATE ===================
     public Produto cadastrar(Long restauranteId, Produto produto) {
         Restaurante restaurante = restauranteRepository.findById(restauranteId)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Restaurante não encontrado"));
 
-        if(!restaurante.isAtivo()) { // Boa prática: usar getter 'isAtivo' para boolean
+        if(!restaurante.isAtivo()) {
             throw new RegraNegocioException("Não é possível adicionar produto a restaurante inativo");
         }
 
@@ -39,6 +39,37 @@ public class ProdutoService {
         return produtoRepository.save(produto);
     }
 
+    // =================== READ ===================
+    public Produto buscarPorId(Long id) {
+        return produtoRepository.findById(id)
+                .orElseThrow(() -> new EntidadeNaoEncontradaException("Produto não encontrado"));
+    }
+
+    public List<Produto> buscarPorRestaurante(Long restauranteId) {
+        // Não é necessário buscar o restaurante primeiro, o Repositório pode fazer a busca direto pelo ID
+        return produtoRepository.findByRestauranteId(restauranteId);
+        // Se a regra for buscar apenas produtos *ativos* do restaurante, use:
+        // Restaurante restaurante = restauranteRepository.findById(restauranteId).orElseThrow(() -> new EntidadeNaoEncontradaException("Restaurante não encontrado"));
+        // return produtoRepository.findByRestauranteAndAtivoTrue(restaurante);
+    }
+
+    /**
+     * NOVO MÉTODO: Suporta GET /api/produtos/categoria/{categoria}
+     */
+    public List<Produto> buscarPorCategoria(String categoria) {
+        // O repositório já possui o método findByRestauranteCategoria (que busca nos restaurantes)
+        return produtoRepository.findByRestauranteCategoria(categoria);
+    }
+
+    /**
+     * NOVO MÉTODO: Suporta GET /api/produtos/buscar?nome={nome}
+     */
+    public List<Produto> buscarPorNome(String nome) {
+        // O repositório deve ter o método findByNomeContainingIgnoreCase
+        return produtoRepository.findByNomeContainingIgnoreCase(nome);
+    }
+
+    // =================== UPDATE ===================
     public Produto atualizar(Long id, Produto novosDados) {
         Produto existente = produtoRepository.findById(id)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Produto não encontrado"));
@@ -48,12 +79,12 @@ public class ProdutoService {
         existente.setNome(novosDados.getNome());
         existente.setDescricao(novosDados.getDescricao());
         existente.setPreco(novosDados.getPreco());
-        existente.setAtivo(novosDados.isAtivo()); // Boa prática: usar getter 'isAtivo'
+        existente.setAtivo(novosDados.isAtivo());
 
         return produtoRepository.save(existente);
     }
 
-    // CORREÇÃO: Adicionada anotação @Transactional
+    // PATCH /api/produtos/{id}/disponibilidade
     @Transactional
     public void alterarDisponibilidade(Long id, boolean ativo) {
         if (!produtoRepository.existsById(id)) {
@@ -62,21 +93,18 @@ public class ProdutoService {
         produtoRepository.setAtivo(id, ativo);
     }
 
+    // =================== DELETE ===================
+    public void deletar(Long id) {
+        if (!produtoRepository.existsById(id)) {
+            throw new EntidadeNaoEncontradaException("Produto não encontrado");
+        }
+        produtoRepository.deleteById(id);
+    }
+
+    // =================== VALIDAÇÃO ===================
     private void validarPreco(BigDecimal preco) {
         if (preco == null || preco.compareTo(BigDecimal.ZERO) <= 0) {
             throw new RegraNegocioException("O preço do produto não pode ser nulo ou menor/igual a zero.");
         }
-    }
-
-    public List<Produto> buscarPorRestaurante(Long restauranteId) {
-        Restaurante restaurante = restauranteRepository.findById(restauranteId)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Restaurante não encontrado"));
-
-        return produtoRepository.findByRestauranteAndAtivoTrue(restaurante);
-    }
-
-    public Produto buscarPorId(Long id) {
-        return produtoRepository.findById(id)
-                .orElseThrow(() -> new EntidadeNaoEncontradaException("Produto não encontrado"));
     }
 }

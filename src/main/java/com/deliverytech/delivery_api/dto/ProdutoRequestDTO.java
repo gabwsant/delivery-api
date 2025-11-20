@@ -6,8 +6,14 @@ import java.math.BigDecimal;
 
 @Data
 public class ProdutoRequestDTO {
+
+    // Campo obrigatório para o cadastro do produto
+    private Long restauranteId;
+
     private String nome;
     private String descricao;
     private BigDecimal preco;
-    private Boolean ativo; // Opcional para update
+
+    // Opcional para update, mas pode ser incluído no cadastro
+    private Boolean ativo;
 }

@@ -1,6 +1,10 @@
 package com.deliverytech.delivery_api.service;
 
-import com.deliverytech.delivery_api.entity.*; // Precisa do ItemPedido
+import com.deliverytech.delivery_api.entity.Cliente;
+import com.deliverytech.delivery_api.entity.ItemPedido;
+import com.deliverytech.delivery_api.entity.Pedido;
+import com.deliverytech.delivery_api.entity.Produto;
+import com.deliverytech.delivery_api.entity.Restaurante;
 import com.deliverytech.delivery_api.exception.EntidadeNaoEncontradaException;
 import com.deliverytech.delivery_api.exception.RegraNegocioException;
 import com.deliverytech.delivery_api.repository.ClienteRepository;
@@ -10,10 +14,11 @@ import com.deliverytech.delivery_api.repository.RestauranteRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList; // Importar
-import java.util.List; // Importar
-import java.util.Map; // Importar
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Service
 public class PedidoService {
@@ -21,7 +26,6 @@ public class PedidoService {
     private final ClienteRepository clienteRepository;
     private final RestauranteRepository restauranteRepository;
     private final ProdutoRepository produtoRepository;
-    // Não precisamos do ItemPedidoRepository aqui se usarmos Cascade
 
     public PedidoService(PedidoRepository pedidoRepository,
                          ClienteRepository clienteRepository,
@@ -33,11 +37,10 @@ public class PedidoService {
         this.produtoRepository = produtoRepository;
     }
 
+    // =================== CRIAÇÃO E CÁLCULO ===================
+
     /**
-     * Cria um novo pedido.
-     * @param clienteId ID do Cliente
-     * @param restauranteId ID do Restaurante
-     * @param itensPedido Map onde a Chave é o ID do Produto e o Valor é a Quantidade
+     * POST /api/pedidos - Cria um novo pedido, persistindo no banco.
      */
     @Transactional
     public Pedido criarPedido(Long clienteId, Long restauranteId, Map<Long, Integer> itensPedido) {
@@ -46,13 +49,12 @@ public class PedidoService {
         Restaurante restaurante = restauranteRepository.findById(restauranteId)
                 .orElseThrow(() -> new EntidadeNaoEncontradaException("Restaurante não encontrado"));
 
-        if(!cliente.isAtivo()) throw new RegraNegocioException("Cliente inativo");
-        if(!restaurante.isAtivo()) throw new RegraNegocioException("Restaurante inativo");
-        if(itensPedido == null || itensPedido.isEmpty()) {
+        if (!cliente.isAtivo()) throw new RegraNegocioException("Cliente inativo");
+        if (!restaurante.isAtivo()) throw new RegraNegocioException("Restaurante inativo");
+        if (itensPedido == null || itensPedido.isEmpty()) {
             throw new RegraNegocioException("O pedido deve ter pelo menos um item");
         }
 
-        // 1. Cria o Pedido "pai"
         Pedido pedido = new Pedido();
         pedido.setCliente(cliente);
         pedido.setRestaurante(restaurante);
@@ -61,7 +63,7 @@ public class PedidoService {
 
         List<ItemPedido> listaDeItens = new ArrayList<>();
 
-        // 2. Processa os itens
+        // Processamento e validação de itens (lógica correta)
         for (Map.Entry<Long, Integer> item : itensPedido.entrySet()) {
             Long produtoId = item.getKey();
             Integer quantidade = item.getValue();
@@ -73,7 +75,6 @@ public class PedidoService {
             Produto produto = produtoRepository.findById(produtoId)
                     .orElseThrow(() -> new EntidadeNaoEncontradaException("Produto " + produtoId + " não encontrado"));
 
-            // Validação de negócio crucial:
             if (!produto.isAtivo()) {
                 throw new RegraNegocioException("Produto " + produto.getNome() + " está indisponível");
             }
@@ -81,43 +82,133 @@ public class PedidoService {
                 throw new RegraNegocioException("Produto " + produto.getNome() + " não pertence ao restaurante " + restaurante.getNome());
             }
 
-            // 3. Cria o ItemPedido
             ItemPedido itemPedido = new ItemPedido();
-            itemPedido.setPedido(pedido); // Linka o item ao pedido "pai"
+            itemPedido.setPedido(pedido);
             itemPedido.setProduto(produto);
             itemPedido.setQuantidade(quantidade);
-            itemPedido.setPrecoUnitario(produto.getPreco()); // Salva o preço do momento da compra
+            itemPedido.setPrecoUnitario(produto.getPreco());
 
             listaDeItens.add(itemPedido);
         }
 
-        // 4. Finaliza o Pedido
         pedido.setItens(listaDeItens);
-        pedido.calcularTotal(); // Usa o método helper da entidade
+        pedido.calcularTotal();
 
-        // 5. Salva (Cascade.ALL salvará os ItemPedido juntos)
         return pedidoRepository.save(pedido);
     }
 
-    @Transactional
-    public Pedido atualizarStatus(Long pedidoId, String novoStatus) {
-        // CORRIGIDO: Método 'findByIdWithItens' do repositório corrigido
-        Pedido pedido = pedidoRepository.findByIdWithItens(pedidoId);
+    /**
+     * POST /api/pedidos/calcular - Calcula o total do pedido sem salvar.
+     */
+    @Transactional(readOnly = true)
+    public BigDecimal calcularTotal(Long restauranteId, Map<Long, Integer> itensPedido) {
+        BigDecimal totalProdutos = BigDecimal.ZERO;
+
+        // Processamento e validação de itens (similar ao criarPedido)
+        for (Map.Entry<Long, Integer> item : itensPedido.entrySet()) {
+            Long produtoId = item.getKey();
+            Integer quantidade = item.getValue();
+
+            Produto produto = produtoRepository.findById(produtoId)
+                    .orElseThrow(() -> new EntidadeNaoEncontradaException("Produto " + produtoId + " não encontrado"));
+
+            if (!produto.isAtivo()) {
+                throw new RegraNegocioException("Produto " + produto.getNome() + " está indisponível");
+            }
+
+            // Opcional: Adicionar validação de que o produto pertence ao restaurante, se relevante para o cálculo.
+
+            BigDecimal subtotal = produto.getPreco().multiply(new BigDecimal(quantidade));
+            totalProdutos = totalProdutos.add(subtotal);
+        }
+
+        // Adicionar lógica de taxa de entrega se for um requisito de negócio
+        return totalProdutos;
+    }
+
+    // =================== BUSCAS (READ) ===================
+
+    /**
+     * GET /api/pedidos/{id} - Busca um pedido completo por ID.
+     * **CORRIGIDO** para usar o método padronizado do Repositório: findByIdCompleto
+     */
+    @Transactional(readOnly = true)
+    public Pedido buscarPorIdCompleto(Long id) {
+        // Substitui pedidoRepository.findByIdWithItens(id)
+        Pedido pedido = pedidoRepository.findByIdCompleto(id);
         if (pedido == null) throw new EntidadeNaoEncontradaException("Pedido não encontrado");
-
-        pedido.setStatus(novoStatus);
-        // O 'save' não é estritamente necessário dentro de @Transactional,
-        // mas é uma boa prática para clareza.
-        return pedidoRepository.save(pedido);
+        return pedido;
     }
 
-    @Transactional(readOnly = true) // Boa prática para buscas complexas
+    /**
+     * GET /api/clientes/{clienteId}/pedidos - Histórico do cliente.
+     * **CORRIGIDO** para usar o método padronizado do Repositório: findByClienteIdCompleto
+     */
+    @Transactional(readOnly = true)
     public List<Pedido> buscarPorCliente(Long clienteId) {
         if (!clienteRepository.existsById(clienteId)) {
             throw new EntidadeNaoEncontradaException("Cliente não encontrado");
         }
+        // Substitui pedidoRepository.findByClienteWithItens(clienteId)
+        return pedidoRepository.findByClienteIdCompleto(clienteId);
+    }
 
-        // CORRIGIDO: Método 'findByClienteWithItens' do repositório corrigido
-        return pedidoRepository.findByClienteWithItens(clienteId);
+    /**
+     * GET /api/restaurantes/{restauranteId}/pedidos - Pedidos do restaurante.
+     * **CORRIGIDO** para usar o método padronizado do Repositório: findByRestauranteIdCompleto
+     */
+    @Transactional(readOnly = true)
+    public List<Pedido> buscarPorRestaurante(Long restauranteId) {
+        if (!restauranteRepository.existsById(restauranteId)) {
+            throw new EntidadeNaoEncontradaException("Restaurante não encontrado");
+        }
+        // Substitui pedidoRepository.findByRestauranteIdWithItens(restauranteId)
+        return pedidoRepository.findByRestauranteIdCompleto(restauranteId);
+    }
+
+    /**
+     * GET /api/pedidos - Listar com filtros dinâmicos.
+     * **CORRIGIDO** para usar o método padronizado do Repositório: listarComFiltrosCompleto
+     */
+    @Transactional(readOnly = true)
+    public List<Pedido> listarComFiltros(String status, LocalDateTime dataInicio, LocalDateTime dataFim) {
+        if (dataInicio != null && dataFim != null && dataInicio.isAfter(dataFim)) {
+            throw new RegraNegocioException("A data de início não pode ser posterior à data de fim.");
+        }
+        // Substitui pedidoRepository.listarComFiltros(...)
+        return pedidoRepository.listarComFiltrosCompleto(status, dataInicio, dataFim);
+    }
+
+    // =================== ATUALIZAÇÃO E CANCELAMENTO ===================
+
+    /**
+     * PATCH /api/pedidos/{id}/status - Atualiza o status do pedido.
+     * **CONSOLIDADO** e **CORRIGIDO**
+     */
+    @Transactional
+    public Pedido atualizarStatus(Long pedidoId, String novoStatus) {
+        // Usa o método buscarPorIdCompleto para garantir o carregamento do pedido.
+        Pedido pedido = buscarPorIdCompleto(pedidoId);
+
+        // Adicionar validação de transição de status aqui (ex: PENDENTE -> APROVADO)
+
+        pedido.setStatus(novoStatus);
+        return pedidoRepository.save(pedido);
+    }
+
+    /**
+     * DELETE /api/pedidos/{id} - Cancela o pedido.
+     * **CONSOLIDADO**
+     */
+    @Transactional
+    public void cancelarPedido(Long id) {
+        Pedido pedido = buscarPorIdCompleto(id);
+
+        if (!pedido.getStatus().equals("PENDENTE")) {
+            throw new RegraNegocioException("Pedido em status '" + pedido.getStatus() + "' não pode ser cancelado.");
+        }
+
+        pedido.setStatus("CANCELADO");
+        pedidoRepository.save(pedido);
     }
 }
